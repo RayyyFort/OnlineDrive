@@ -9,8 +9,8 @@
 </script>
 
 <template>
-  <section>
+  <div>
     <test/>
-    <p class="text-danger">Middle</p>
-  </section>
+    
+  </div>
 </template>
