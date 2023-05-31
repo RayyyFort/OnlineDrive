@@ -1,9 +1,16 @@
-<template>
-  <p>hello world!</p>
-</template>
+<script>
+  import test from "../Layouts/header.vue";
 
-<style scoped>
-button {
-  font-weight: bold;
-}
-</style>
+  export default{
+    components: {
+      test
+    }
+  }
+</script>
+
+<template>
+  <section>
+    <test/>
+    <p class="text-danger">Middle</p>
+  </section>
+</template>
