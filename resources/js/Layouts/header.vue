@@ -9,7 +9,8 @@
             styleObject: function () {
                 return{
                     'background-color':this.randomcolor(),
-                    color:this.randomcolor()
+                    color:this.randomcolor(),
+                    'min-height':'50px'
                 }
             }
         },
@@ -17,14 +18,12 @@
 </script>
 
 <template>
-    <header :style="styleObject">
-        <div class="d-flex justify-content-around">
-            <p>logo</p>
-            <div>
-                <div class="flex flex-row">
-                    <p>Login                       </p>
-                    <p>Register</p>
-                </div>
+    <header :style="styleObject" class="d-flex justify-content-around align-items-center">
+        <p>logo</p>
+        <div>
+            <div class="flex flex-row">
+                <p>Login</p>
+                <p>Register</p>
             </div>
         </div>
     </header>
