@@ -21,9 +21,9 @@
     <header :style="styleObject" class="d-flex justify-content-around align-items-center">
         <p>logo</p>
         <div>
-            <div class="flex flex-row">
-                <p>Login</p>
-                <p>Register</p>
+            <div class="d-flex flex-row">
+                <a :href="route('login')">Login</a>
+                <a :href="route('register')">Register</a>
             </div>
         </div>
     </header>
