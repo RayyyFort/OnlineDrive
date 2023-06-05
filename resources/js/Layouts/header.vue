@@ -18,10 +18,11 @@
 </script>
 
 <template>
-    <header :style="styleObject" class="d-flex justify-content-around align-items-center">
+    <header :style="styleObject" class="d-flex flex-row justify-content-around align-items-center">
         <p>logo</p>
         <div>
             <div class="d-flex flex-row">
+                <a :href="route('About')">About</a>
                 <a :href="route('login')">Login</a>
                 <a :href="route('register')">Register</a>
             </div>

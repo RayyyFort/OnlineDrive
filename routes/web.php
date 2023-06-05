@@ -17,6 +17,10 @@ use Inertia\Inertia;
 */
 
 Route::get('/', function () {
+    return Inertia::render('About');
+})->name('About');;
+
+Route::get('/Files', function () {
     return Inertia::render('Main');
 });
 
