@@ -1,5 +1,8 @@
 <script>
     export default {
+        props: {
+            logged: String,
+        },
         methods:{
             randomcolor: function (){
                 return "#" + Math.floor(Math.random() * 16777215).toString(16)
@@ -21,8 +24,13 @@
     <header :style="styleObject" class="d-flex flex-row justify-content-around align-items-center">
         <p>logo</p>
         <div>
-            <div class="d-flex flex-row">
+            <div v-if="logged=='1'" class="d-flex flex-row">
+                <a :href="route('Files')">Files</a>
                 <a :href="route('About')">About</a>
+            </div>
+            <div v-else class="d-flex flex-row">
+                <a :href="route('About')">About</a>
+                <a :href="route('login')">Login</a>
                 <a :href="route('login')">Login</a>
                 <a :href="route('register')">Register</a>
             </div>

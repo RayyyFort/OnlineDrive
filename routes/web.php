@@ -4,6 +4,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -17,12 +19,12 @@ use Inertia\Inertia;
 */
 
 Route::get('/', function () {
-    return Inertia::render('About');
+    return Inertia::render('About',['logged' => Auth::check()]);
 })->name('About');;
 
 Route::get('/Files', function () {
-    return Inertia::render('Main');
-});
+    return Inertia::render('Main', ['logged' => Auth::check()]);
+})->name('Files');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');

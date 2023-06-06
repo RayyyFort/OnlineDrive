@@ -2,15 +2,18 @@
   import MyHeader from "../Layouts/header.vue";
 
   export default{
+    props: {
+        logged: String,
+    },
     components: {
       MyHeader
     }
-  }
+  };
 </script>
 
 <template>
   <div>
-    <MyHeader/>
+    <MyHeader :logged="this.logged"/>
     <h1>About OnlineDrive</h1>
     <p>This my website to store files online for free !</p>
   </div>

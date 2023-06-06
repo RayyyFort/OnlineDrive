@@ -2,6 +2,9 @@
   import MyHeader from "../Layouts/header.vue";
 
   export default{
+    props:{
+      logged:String,
+    },
     components: {
       MyHeader
     }
@@ -10,7 +13,7 @@
 
 <template>
   <div>
-    <MyHeader/>
-    
+    <MyHeader :logged="this.logged"/>
+      
   </div>
 </template>
