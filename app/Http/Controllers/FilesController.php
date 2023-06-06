@@ -11,4 +11,8 @@ class FilesController extends Controller
     public function Index(){
         return Inertia::render('Files', ['logged' => Auth::check()]);
     }
+
+    public function FileChanged(){
+        
+    }
 }
