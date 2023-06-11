@@ -24,6 +24,8 @@ Route::get('/', function () {
 
 Route::get('/Files', [App\Http\Controllers\FilesController::class, 'Index'])->name('Files');
 
+Route::get('/DeleteTemp', [App\Http\Controllers\FilesController::class, 'DeleteTemp'])->name('Files.DeleteTemp');
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -33,5 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::get('/Heartbeat', [App\Http\Controllers\FilesController::class, 'Heartbeat'])->name('Heartbeat');
 
 require __DIR__.'/auth.php';

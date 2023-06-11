@@ -3,7 +3,7 @@
 
   export default{
     props: {
-        logged: String,
+        logged: Boolean,
     },
     components: {
       MyHeader

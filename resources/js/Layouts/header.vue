@@ -1,7 +1,7 @@
 <script>
     export default {
         props: {
-            logged: String,
+            logged: Boolean,
         },
         methods:{
             randomcolor: function (){
@@ -30,7 +30,6 @@
             </div>
             <div v-else class="d-flex flex-row">
                 <a :href="route('About')">About</a>
-                <a :href="route('login')">Login</a>
                 <a :href="route('login')">Login</a>
                 <a :href="route('register')">Register</a>
             </div>
