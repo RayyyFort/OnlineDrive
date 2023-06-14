@@ -19,8 +19,20 @@
     },
     methods:{
       clickedPath(nextpath){
-        var pathtogo = $('#currentPath').text()+"\\"+nextpath;
-        console.log("nexxxxxxxxxt : " + pathtogo);
+        var currentpath = $('#currentPath').text()
+        if (nextpath == ".."){
+          for (let i = currentpath.length; i > 0; i--) {
+            if (currentpath[i] == "\\"){
+              pathtogo = currentpath.substring(0,i);
+
+              break;
+            }
+          }
+        }
+        else{
+          var pathtogo = currentpath+"\\"+nextpath;
+        }
+        
         window.location.href = route('Files.CustomPath', {PathToGo: pathtogo});
       }
     }
