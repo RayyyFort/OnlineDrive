@@ -21,17 +21,25 @@
 </script>
 
 <template>
-    <header :style="styleObject" class="d-flex flex-row justify-content-around align-items-center">
-        <p>logo</p>
-        <div>
-            <div v-if="logged=='1'" class="d-flex flex-row">
-                <a :href="route('Files')">Files</a>
-                <a :href="route('About')">About</a>
-            </div>
-            <div v-else class="d-flex flex-row">
-                <a :href="route('About')">About</a>
-                <a :href="route('login')">Login</a>
-                <a :href="route('register')">Register</a>
+    <header :style="styleObject">
+        <div class="d-flex flex-row justify-content-around">
+            <p>logo</p>
+            <div>
+                <div v-if="logged=='1'" class="d-flex flex-row">
+                    <a :href="route('Files')" class="btn btn-secondary mr-3 mt-1" type="button">Files</a>
+                    <button class="btn btn-secondary dropdown-toggle mt-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Profile
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="dashboard">dashboard</a></li>
+                        <li><a class="dropdown-item" href="profile">profile</a></li>
+                        <li><a class="dropdown-item" href="#">logout</a></li>
+                    </ul>
+                </div>
+                <div v-else class="d-flex flex-row">
+                    <a :href="route('login')">Login</a>&nbsp;&nbsp;&nbsp;
+                    <a :href="route('register')">Register</a>
+                </div>
             </div>
         </div>
     </header>

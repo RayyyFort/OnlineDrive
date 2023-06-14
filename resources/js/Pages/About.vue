@@ -14,7 +14,13 @@
 <template>
   <div>
     <MyHeader :logged="this.logged"/>
-    <h1>About OnlineDrive</h1>
-    <p>This my website to store files online for free !</p>
+    <div class="d-flex flex-column">
+      <h1 style="margin-left:auto;margin-right: auto;">About OnlineDrive</h1>
+      <div style="margin-left:auto;margin-right: auto;margin-top: 20px;">
+        <p>This is a website to store files online for free !</p>
+        <p>Our primary goal is just to host a file server for everyone to enjoy</p>
+        <p>Every user has access to unlimited space</p>
+      </div>
+    </div>
   </div>
 </template>

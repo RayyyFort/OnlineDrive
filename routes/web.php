@@ -5,6 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\FilesController;
 
 
 /*
@@ -22,7 +23,9 @@ Route::get('/', function () {
     return Inertia::render('About',['logged' => Auth::check()]);
 })->name('About');;
 
-Route::get('/Files', [App\Http\Controllers\FilesController::class, 'Index'])->name('Files');
+Route::get('/Files/', [App\Http\Controllers\FilesController::class, 'Index'])->name('Files');
+
+Route::get('/Files/{PathToGo}', [App\Http\Controllers\FilesController::class, 'Index'])->name('Files.CustomPath');
 
 Route::get('/DeleteTemp', [App\Http\Controllers\FilesController::class, 'DeleteTemp'])->name('Files.DeleteTemp');
 
@@ -36,6 +39,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/Heartbeat', [App\Http\Controllers\FilesController::class, 'Heartbeat'])->name('Heartbeat');
+Route::get('/Heartbeat', [FilesController::class, 'Heartbeat'])->name('Heartbeat');
 
 require __DIR__.'/auth.php';

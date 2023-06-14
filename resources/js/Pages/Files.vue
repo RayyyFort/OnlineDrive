@@ -12,13 +12,16 @@
     props:{
       logged:Boolean,
       FilesList:Array,
+      CurrentFolder:String,
     },
     components: {
       MyHeader
     },
     methods:{
-      clickedPath(path){
-        console.log(path)
+      clickedPath(nextpath){
+        var pathtogo = $('#currentPath').text()+"\\"+nextpath;
+        console.log("nexxxxxxxxxt : " + pathtogo);
+        window.location.href = route('Files.CustomPath', {PathToGo: pathtogo});
       }
     }
   }
@@ -28,18 +31,18 @@
   <div style="height: 100%; width: 100%; display: flex; flex-direction: column;">
     <MyHeader :logged="this.logged"/>
     <main style="display: flex; flex-direction: column; height: 100%; border: 1px solid white;">
-      <h1 style="margin: auto; margin-top: 10px; margin-bottom: 10px;">Your Files</h1>
-      <div style="max-width: 80%; max-height: 90%; width:100%; height: 100%; margin: auto; border: 1px solid black;">
+      <h1 style="margin: auto; margin-top: auto; margin-bottom: auto;">Your Files</h1>
+      <div style="max-width: 80%; max-height: 90%; width:100%; height: 100%; margin: auto; margin-top: 0px; border: 1px solid black;">
         <table style="margin: 0px; width: 100%;">
           <thead style="border: 1px solid black; width: 100%;">
             <th>
-              <p>Root</p>
+              <p id="currentPath">{{ CurrentFolder }}</p>
             </th>
           </thead>
           <tbody v-for="path in FilesList">
             <tr>
               <td>
-                <p @click="clickedPath(path)">{{path}}</p>
+                <a @click="clickedPath(path)">{{path}}</a>
               </td>
             </tr>
           </tbody>

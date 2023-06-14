@@ -9,28 +9,39 @@ use Illuminate\Support\Facades\DB;
 
 class FilesController extends Controller
 {
-    public function Index(Request $request){
+    public function Index(Request $request,string $PathToGo = NULL){
+        echo("<script>console.log('PHP: " . $PathToGo . "');</script>");
         $id = $request->user()->id;
         $path = sprintf('D:\%s.zip',$id);
-        $tempPath = sprintf('D:\temp_%s',$id);
-        if (!file_exists($path)){
-            $myfile = fopen($path, "w");
-            fclose($myfile);
-            #try{
-            #    $phar = new PharData($path);
-            #    $phar->extractTo($temp,$overwrite=true);
-            #}
-            #catch(Exception $e){
-            #    return Inertia::render('About', ['logged' => Auth::check()]);
-            #}
+        $tempPath = sprintf('D:\temp_%s\\',$id);
+        $Root = $tempPath;
+        if(!file_exists($tempPath)){
+            mkdir($tempPath, 0777, true);
+            if(file_exists($path)){
+                $zip = new \ZipArchive;
+                $res = $zip->open($path);
+                if ($res === TRUE) {
+                    $zip->extractTo($tempPath);
+                    $zip->close();
+                } 
+                else {
+                    return "something went wrong";
+                }
+            }
         }
+        if ($PathToGo != NULL){
+            $tempPath = str_replace("Root",$tempPath,$PathToGo);
+            echo("<script>console.log('PHP: " . $tempPath . "');</script>");
+        }
+        /*
         $zip = new \ZipArchive;
         if ($zip->open($path) === TRUE){
             $zip->extractTo($tempPath);
             $zip->close();
         }
+        */
         $FilesArr = array_slice(scandir($tempPath),1,NULL,false);
-        return Inertia::render('Files', ['logged' => Auth::check(),'FilesList' => $FilesArr]);
+        return Inertia::render('Files', ['logged' => Auth::check(),'FilesList' => $FilesArr, 'CurrentFolder' => str_replace($Root,"Root",$tempPath)]);
     }
 
     private function rrmdir($dir)
@@ -73,6 +84,4 @@ class FilesController extends Controller
             // something went wrong
         }
     }
-
-    
 }
