@@ -1,7 +1,8 @@
 <script>
   import MyHeader from "../Layouts/header.vue";
   import {heartbeat, httpGET} from "../HeartbeatWorker.js"
-
+import axios from "axios";
+import { list } from "postcss";
 
   var w;
   export default{
@@ -13,9 +14,17 @@
       logged:Boolean,
       FilesList:Array,
       CurrentFolder:String,
+      dirArr:Array,
     },
     components: {
       MyHeader
+    },
+    data() {
+      return{
+        current: this.CurrentFolder,
+        Filess: this.FilesList,
+        areDir: this.dirArr,
+      }
     },
     methods:{
       clickedPath(nextpath){
@@ -24,7 +33,6 @@
           for (let i = currentpath.length; i > 0; i--) {
             if (currentpath[i] == "\\"){
               pathtogo = currentpath.substring(0,i);
-
               break;
             }
           }
@@ -32,8 +40,21 @@
         else{
           var pathtogo = currentpath+"\\"+nextpath;
         }
-        
-        window.location.href = route('Files.CustomPath', {PathToGo: pathtogo});
+        var vm = this;
+        console.log(pathtogo);
+        $.ajax({
+          type: "get",
+          url: route('Files.CustomPath', {PathToGo: pathtogo}),
+          data: $(this).serialize(),
+          dataType: 'json',
+          success: async function(data) {
+            vm.Filess = data[0];
+            vm.current = pathtogo;
+            vm.areDir = data[1];
+          }
+        })
+        //window.location.href = route('Files.CustomPath', {PathToGo: pathtogo});
+
       }
     }
   }
@@ -48,10 +69,10 @@
         <table style="margin: 0px; width: 100%;">
           <thead style="border: 1px solid black; width: 100%;">
             <th>
-              <p id="currentPath">{{ CurrentFolder }}</p>
+              <p id="currentPath">{{ current }}</p>
             </th>
           </thead>
-          <tbody v-for="path in FilesList">
+          <tbody v-for="path in Filess">
             <tr>
               <td>
                 <a @click="clickedPath(path)">{{path}}</a>

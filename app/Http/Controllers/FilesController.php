@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\DB;
 class FilesController extends Controller
 {
     public function Index(Request $request,string $PathToGo = NULL){
-        echo("<script>console.log('PHP: " . $PathToGo . "');</script>");
         $id = $request->user()->id;
         $path = sprintf('D:\%s.zip',$id);
         $tempPath = sprintf('D:\temp_%s\\',$id);
@@ -31,7 +30,16 @@ class FilesController extends Controller
         }
         if ($PathToGo != NULL){
             $tempPath = str_replace("Root",$tempPath,$PathToGo);
-            echo("<script>console.log('PHP: " . $tempPath . "');</script>");
+            $skip = 1;
+            if ($PathToGo == "Root"){
+                $skip = 2;
+            }
+            $FilesArr = array_slice(scandir($tempPath),$skip,NULL,false);
+            $dirArr = array();
+            foreach ($FilesArr as $value){
+                array_push($dirArr,is_dir(sprintf("%s\\%s",$tempPath,$value)));
+            }
+            return array($FilesArr, $dirArr);
         }
         /*
         $zip = new \ZipArchive;
@@ -40,8 +48,12 @@ class FilesController extends Controller
             $zip->close();
         }
         */
-        $FilesArr = array_slice(scandir($tempPath),1,NULL,false);
-        return Inertia::render('Files', ['logged' => Auth::check(),'FilesList' => $FilesArr, 'CurrentFolder' => str_replace($Root,"Root",$tempPath)]);
+        $FilesArr = array_slice(scandir($tempPath),2,NULL,false);
+        $dirArr = array();
+        foreach ($FilesArr as $value){
+            array_push($dirArr,is_dir(sprintf("%s\\%s",$tempPath,$value)));
+        }
+        return Inertia::render('Files', ['logged' => Auth::check(),'FilesList' => $FilesArr, 'CurrentFolder' => str_replace($Root,"Root",$tempPath), 'dirArr' => $dirArr]);
     }
 
     private function rrmdir($dir)

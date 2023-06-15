@@ -23,7 +23,7 @@ Route::get('/', function () {
     return Inertia::render('About',['logged' => Auth::check()]);
 })->name('About');;
 
-Route::get('/Files/', [App\Http\Controllers\FilesController::class, 'Index'])->name('Files');
+Route::get('/Files', [App\Http\Controllers\FilesController::class, 'Index'])->name('Files');
 
 Route::get('/Files/{PathToGo}', [App\Http\Controllers\FilesController::class, 'Index'])->name('Files.CustomPath');
 
@@ -39,6 +39,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/Heartbeat', [FilesController::class, 'Heartbeat'])->name('Heartbeat');
+Route::get('/Heartbeat', [App\Http\Controllers\FilesController::class, 'Heartbeat'])->name('Heartbeat');
 
 require __DIR__.'/auth.php';
