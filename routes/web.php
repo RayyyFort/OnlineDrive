@@ -25,6 +25,8 @@ Route::get('/', function () {
 
 Route::get('/Files', [App\Http\Controllers\FilesController::class, 'Index'])->name('Files');
 
+Route::post('/File/FileChanged', [App\Http\Controllers\FilesController::class, 'FileChanged'])->name('fileChanged');
+
 Route::get('/Files/{PathToGo}', [App\Http\Controllers\FilesController::class, 'Index'])->name('Files.CustomPath');
 
 Route::get('/DeleteTemp', [App\Http\Controllers\FilesController::class, 'DeleteTemp'])->name('Files.DeleteTemp');

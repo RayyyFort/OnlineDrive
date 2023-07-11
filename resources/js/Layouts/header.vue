@@ -6,6 +6,15 @@
         methods:{
             randomcolor: function (){
                 return "#" + Math.floor(Math.random() * 16777215).toString(16)
+            },
+            logoutMethod: function (){
+                $.ajax({
+                  type: "post",
+                  headers:{
+                            'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')
+                          },
+                  url: route('logout')
+                });
             }
         },
         computed:{
@@ -22,6 +31,7 @@
 
 <template>
     <header :style="styleObject">
+        <meta id="header_csrf" name="csrf-token" content="">
         <div class="d-flex flex-row justify-content-around">
             <p>logo</p>
             <div>
@@ -31,9 +41,8 @@
                         Profile
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="dashboard">dashboard</a></li>
-                        <li><a class="dropdown-item" href="profile">profile</a></li>
-                        <li><a class="dropdown-item" href="#">logout</a></li>
+                        <li><a class="dropdown-item" :href="route('profile.edit')">profile</a></li>
+                        <li><a @click="logoutMethod()" class="dropdown-item" type="submit">logout</a></li>
                     </ul>
                 </div>
                 <div v-else class="d-flex flex-row">

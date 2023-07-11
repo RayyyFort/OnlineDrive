@@ -6,21 +6,26 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+
+// echo("<script>console.log('PHP: " . $data . "');</script>");
 
 class FilesController extends Controller
 {
     public function Index(Request $request,string $PathToGo = NULL){
+        $tempDisk = Storage::disk('temp');
+        $CompressedDisk = Storage::disk('Compressed');
         $id = $request->user()->id;
-        $path = sprintf('D:\%s.zip',$id);
-        $tempPath = sprintf('D:\temp_%s\\',$id);
+        $path = sprintf('%s.zip',$id);
+        $tempPath = sprintf('temp_%s\\',$id);
         $Root = $tempPath;
-        if(!file_exists($tempPath)){
-            mkdir($tempPath, 0777, true);
-            if(file_exists($path)){
+        if(!$tempDisk->exists($tempPath)){
+            $tempDisk->makeDirectory($tempPath);
+            if($CompressedDisk->exists($path)){
                 $zip = new \ZipArchive;
-                $res = $zip->open($path);
+                $res = $zip->open($CompressedDisk->path($path));
                 if ($res === TRUE) {
-                    $zip->extractTo($tempPath);
+                    $zip->extractTo($tempDisk->path($tempPath));
                     $zip->close();
                 } 
                 else {
@@ -34,26 +39,16 @@ class FilesController extends Controller
             if ($PathToGo == "Root"){
                 $skip = 2;
             }
-            $FilesArr = array_slice(scandir($tempPath),$skip,NULL,false);
-            $dirArr = array();
-            foreach ($FilesArr as $value){
-                array_push($dirArr,is_dir(sprintf("%s\\%s",$tempPath,$value)));
-            }
+            $FilesArr = array_map(fn($longPath) => basename($longPath),$tempDisk->files($tempPath));
+            //$FilesArr = array_slice(scandir($tempPath),$skip,NULL,false);
+            $dirArr = array_map(fn($longPath) => basename($longPath),$tempDisk->directories($tempPath));
             return array($FilesArr, $dirArr);
         }
-        /*
-        $zip = new \ZipArchive;
-        if ($zip->open($path) === TRUE){
-            $zip->extractTo($tempPath);
-            $zip->close();
-        }
-        */
-        $FilesArr = array_slice(scandir($tempPath),2,NULL,false);
-        $dirArr = array();
-        foreach ($FilesArr as $value){
-            array_push($dirArr,is_dir(sprintf("%s\\%s",$tempPath,$value)));
-        }
-        return Inertia::render('Files', ['logged' => Auth::check(),'FilesList' => $FilesArr, 'CurrentFolder' => str_replace($Root,"Root",$tempPath), 'dirArr' => $dirArr]);
+        
+        $FilesArr = array_map(fn($longPath) => basename($longPath),$tempDisk->files($tempPath));
+        //$FilesArr = array_slice(scandir($tempPath),2,NULL,false);
+        $dirArr = array_map(fn($longPath) => basename($longPath),$tempDisk->directories($tempPath));
+        return Inertia::render('Files', ['logged' => Auth::check(),'FilesArr' => $FilesArr, 'CurrentFolder' => str_replace($Root,"Root",$tempPath), 'dirArr' => $dirArr]);
     }
 
     private function rrmdir($dir)
@@ -62,7 +57,7 @@ class FilesController extends Controller
             $objects = scandir($dir);
             foreach ($objects as $object){
                 if ($object != '.' && $object != '..'){
-                    if (filetype($dir.'/'.$object) == 'dir') {rrmdir($dir.'/'.$object);}
+                    if (filetype($dir.'/'.$object) == 'dir') {$this->rrmdir($dir.'\\'.$object);}
                     else {unlink($dir.'/'.$object);}
                 }
             }
@@ -71,12 +66,22 @@ class FilesController extends Controller
         }
     }
 
-    public function FileChanged(){
-
+    public function FileChanged(Request $request){
+        $id = $request->user()->id;
+        $tempPath = sprintf('temp_%s\\%s\\',$id,$request->path);
+        $tempDisk = Storage::disk('temp');
+        $file = $request->allFiles();
+        foreach ($file as $curr){
+            if (!file_exists($tempDisk->path($tempPath))){
+                mkdir($tempDisk->path($tempPath), 0777, true);
+            }
+            file_put_contents(sprintf("%s\\%s",$tempDisk->path($tempPath),$curr->getClientOriginalName()),file_get_contents($curr));
+        }
+        return;
     }
 
     public function DeleteTemp(){
-        $dirname=sprintf("D:\\temp_%s",\Auth::id());
+        $dirname=sprintf("D:\\temp\\temp_%s",\Auth::id());
         $this->rrmdir($dirname);
     }
 

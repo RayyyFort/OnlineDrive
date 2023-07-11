@@ -1,5 +1,4 @@
 export function heartbeat(){
-    console.log("heartbeat");
     httpGET(route("Heartbeat"));
 }
 
