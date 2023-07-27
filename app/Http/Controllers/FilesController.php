@@ -44,7 +44,7 @@ class FilesController extends Controller
             $dirArr = array_map(fn($longPath) => basename($longPath),$tempDisk->directories($tempPath));
             return array($FilesArr, $dirArr);
         }
-        
+
         $FilesArr = array_map(fn($longPath) => basename($longPath),$tempDisk->files($tempPath));
         //$FilesArr = array_slice(scandir($tempPath),2,NULL,false);
         $dirArr = array_map(fn($longPath) => basename($longPath),$tempDisk->directories($tempPath));
@@ -99,6 +99,97 @@ class FilesController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             // something went wrong
+        }
+    }
+
+    public function CreateNew(Request $request){
+        $id = $request->user()->id;
+        $tempPath = str_replace("Root","",sprintf('temp_%s\\%s\\',$id,$request->__get("path")));
+        $tempDisk = Storage::disk('temp');
+        switch ($request->__get("Type")){
+            case "Folder":
+                $tempPath = sprintf("%sNew Folder",$tempPath);
+                if (!file_exists($tempDisk->path($tempPath))){
+                    mkdir($tempDisk->path($tempPath), 0777, true);
+                }
+                else{
+                    $NotExist = true;
+                    $count = 0;
+                    while ($NotExist){
+                        if (!file_exists(sprintf("%s(%s)",$tempDisk->path($tempPath),$count))){
+                            mkdir(sprintf("%s(%s)",$tempDisk->path($tempPath),$count), 0777, true);
+                            $NotExist = false;
+                        }
+                        $count++;
+                    }
+                }
+                break;
+            case "txt":
+                $tempPath = sprintf("%sNew Text Document.txt",$tempPath);
+                if (!file_exists($tempDisk->path($tempPath))){
+                    file_put_contents($tempDisk->path($tempPath), "");
+                }
+                else{
+                    $NotExist = true;
+                    $count = 0;
+                    while ($NotExist){
+                        if (!file_exists(sprintf("%s(%s)",$tempDisk->path($tempPath),$count))){
+                            file_put_contents(sprintf("%s(%s)",$tempDisk->path($tempPath),$count),"");
+                            $NotExist = false;
+                        }
+                        $count++;
+                    }
+                }
+                break;
+        }
+        return;
+    }
+
+    public function Delete(Request $request){
+        $id = $request->user()->id;
+        $tempPath = str_replace("Root","",sprintf('temp_%s\\%s\\',$id,$request->__get("path")));
+        $tempDisk = Storage::disk('temp');
+        if (is_dir($tempDisk->path($tempPath))){
+            $this->rrmdir($tempDisk->path($tempPath));
+        }
+        else if (is_file($tempDisk->path($tempPath))){
+            $link = $tempDisk->path($tempPath);
+            unlink($link);
+        }
+    }
+
+    public function DownloadFile(Request $request){
+        $id = $request->user()->id;
+        $tempPath = str_replace("Root","",sprintf('temp_%s\\%s\\',$id,$request->__get("path")));
+        $tempDisk = Storage::disk('temp');
+        //$file = $tempDisk->path($tempPath);
+        $file= public_path("testfile.txt");
+        if (file_exists($file)){
+            if (is_file($file)){
+                $response;
+                $headers = [
+                    'Content-Type' => 'application/',
+                ];
+                return response()->download($file, basename($file), $headers);
+                $response->header('Content-Description','Send file to browser for user to download');
+                $response->header('Content-Type','application/octet-stream');
+                $response->header('Content-Disposition','attachment; filename='.basename($file));
+                $response->header('Content-Transfer-Encoding','binary');
+                $response->header('Expires','0');
+                $response->header('Cache-Control','must-revalidate, post-check=0, pre-check=0');
+                $response->header('Pragma','public');
+                $response->header('Content-Length', ''. filesize($file));
+                ob_clean();
+                flush();
+                $response->setContent(readfile($file));
+                return $response;
+            }
+            else{
+                return "fuck up";
+            }
+        }
+        else{
+            return "not worfjhaskgfhafl";
         }
     }
 }

@@ -43,4 +43,10 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/Heartbeat', [App\Http\Controllers\FilesController::class, 'Heartbeat'])->name('Heartbeat');
 
+Route::post('File/Create', [App\Http\Controllers\FilesController::class, 'CreateNew'])->name('CreateResource');
+
+Route::post('File/Delete', [App\Http\Controllers\FilesController::class, 'Delete'])->name('Delete');
+
+Route::post('File/Download', [App\Http\Controllers\FilesController::class, 'DownloadFile'])->name('DownloadFile');
+
 require __DIR__.'/auth.php';
