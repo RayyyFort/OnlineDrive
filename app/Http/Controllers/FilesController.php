@@ -7,6 +7,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 // echo("<script>console.log('PHP: " . $data . "');</script>");
 
@@ -160,32 +161,41 @@ class FilesController extends Controller
 
     public function DownloadFile(Request $request){
         $id = $request->user()->id;
-        $tempPath = str_replace("Root","",sprintf('temp_%s\\%s\\',$id,$request->__get("path")));
+        $tempPath = str_replace("Root","",sprintf('temp_%s%s',$id,$request->__get("path")));
         $tempDisk = Storage::disk('temp');
-        //$file = $tempDisk->path($tempPath);
-        $file= public_path("testfile.txt");
-        if (file_exists($file)){
-            if (is_file($file)){
-                $response;
-                $headers = [
-                    'Content-Type' => 'application/',
-                ];
-                return response()->download($file, basename($file), $headers);
-                $response->header('Content-Description','Send file to browser for user to download');
-                $response->header('Content-Type','application/octet-stream');
-                $response->header('Content-Disposition','attachment; filename='.basename($file));
-                $response->header('Content-Transfer-Encoding','binary');
-                $response->header('Expires','0');
-                $response->header('Cache-Control','must-revalidate, post-check=0, pre-check=0');
-                $response->header('Pragma','public');
-                $response->header('Content-Length', ''. filesize($file));
-                ob_clean();
-                flush();
-                $response->setContent(readfile($file));
-                return $response;
+        $fileContent = $tempDisk->get($tempPath);
+        if (file_exists($tempDisk->path($tempPath))){
+            if (is_file($tempDisk->path($tempPath))){
+                return response($fileContent)->header('Content-Type', mime_content_type($tempDisk->path($tempPath)));
             }
             else{
-                return "fuck up";
+                $zipcreated = explode("\\",$tempPath)[count(explode("\\",$tempPath))-1] . ".zip";
+
+                $rootPath = realpath($tempDisk->path($tempPath));
+
+                $zip = new \ZipArchive();
+                $zip->open(storage_path() . "\\" . $zipcreated, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+
+                $files = new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator($rootPath),
+                    \RecursiveIteratorIterator::LEAVES_ONLY
+                );
+
+                foreach ($files as $name => $file)
+                {
+                    if (!$file->isDir())
+                    {
+                        $filePath = $file->getRealPath();
+                        $relativePath = substr($filePath, strlen($rootPath) + 1);
+                        $zip->addFile($filePath, $relativePath);
+                    }
+                }
+
+                $zip->close();
+
+                $fileUrl = Storage::url($zipcreated);
+
+                return response()->download(storage_path($zipcreated), $zipcreated,  array('Content-Type' => 'application/octet-stream','Content-Length: '. filesize(storage_path($zipcreated))));
             }
         }
         else{
