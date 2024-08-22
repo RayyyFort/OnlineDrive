@@ -19,7 +19,7 @@
       <div style="margin-left:auto;margin-right: auto;margin-top: 20px;">
         <p>This is a website to store files online for free !</p>
         <p>Our primary goal is just to host a file server for everyone to enjoy</p>
-        <p>Every user has access to unlimited space</p>
+        <p>Every user has access to unlimited storage</p>
       </div>
     </div>
   </div>
